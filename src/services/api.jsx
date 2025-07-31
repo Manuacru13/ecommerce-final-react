@@ -1,4 +1,7 @@
-const BASE_URL = "https://mockapi.io/api/v1/products"; // Cambia esta URL por la de tu MockAPI
+// Archivo: src/services/api.js
+
+const BASE_URL = "https://688af6b62a52cabb9f4f84eb.mockapi.io/products";
+
 
 const api = {
   getProducts: async () => {

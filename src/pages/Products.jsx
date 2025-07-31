@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
+import { FaEdit, FaTrash, FaCartPlus } from "react-icons/fa";
 import ProductCard from "../components/ProductCard";
 import Pagination from "../components/Pagination";
 import ProductForm from "../components/ProductForm";
@@ -26,15 +28,16 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm.trim() === "") {
+    const term = searchTerm.toLowerCase();
+    if (term === "") {
       setFilteredProducts(products);
     } else {
-      const term = searchTerm.toLowerCase();
       setFilteredProducts(
         products.filter(
           (p) =>
             p.name.toLowerCase().includes(term) ||
-            (p.category && p.category.toLowerCase().includes(term))
+            (p.category && p.category.toLowerCase().includes(term)) ||
+            (p.description && p.description.toLowerCase().includes(term))
         )
       );
     }
@@ -49,8 +52,8 @@ const Products = () => {
       setProducts(data);
       setFilteredProducts(data);
     } catch (err) {
-      setError("Error al cargar productos");
-      toast.error("Error al cargar productos");
+      setError("Error al cargar productos regionales");
+      toast.error("No se pudieron cargar los productos");
     } finally {
       setLoading(false);
     }
@@ -66,8 +69,7 @@ const Products = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
-
+    if (!window.confirm("¿Seguro que deseas eliminar este producto?")) return;
     try {
       await api.deleteProduct(id);
       toast.success("Producto eliminado");
@@ -97,7 +99,6 @@ const Products = () => {
     setEditingProduct(null);
   };
 
-  // Paginación:
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
   const currentProducts = filteredProducts.slice(
@@ -106,52 +107,69 @@ const Products = () => {
   );
 
   return (
-    <div className="container mt-4">
-      <h2>Productos</h2>
+    <>
+      <Helmet>
+        <title>Productos Regionales del Norte Argentino</title>
+        <meta
+          name="description"
+          content="Explorá lo mejor de las provincias del norte argentino: quesos, fiambres, vinos, mates y más."
+        />
+      </Helmet>
 
-      <input
-        type="text"
-        placeholder="Buscar por nombre o categoría"
-        className="form-control mb-3"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="container mt-4">
+        <h2>Productos Regionales del Norte Argentino</h2>
+        <p className="text-muted">
+          Explorá lo mejor de nuestras provincias: quesos, fiambres, vinos, mates y más.
+        </p>
 
-      {loading && <p>Cargando productos...</p>}
-      {error && <p className="text-danger">{error}</p>}
+        <input
+          type="text"
+          aria-label="Buscar productos por nombre, categoría o descripción"
+          placeholder="Buscar por nombre, categoría o descripción"
+          className="form-control mb-3"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-      {editingProduct && (
-        <div className="mb-4">
-          <h4>{editingProduct.id ? "Editar Producto" : "Agregar Producto"}</h4>
-          <ProductForm
-            initialData={editingProduct}
-            onSubmit={handleSave}
-            onCancel={handleCancel}
-          />
-        </div>
-      )}
+        {loading && <p>Cargando productos...</p>}
+        {error && <p className="text-danger">{error}</p>}
 
-      <div className="row row-cols-1 row-cols-md-3 g-4">
-        {currentProducts.map((product) => (
-          <div className="col" key={product.id}>
-            <ProductCard
-              product={product}
-              onAddToCart={handleAddToCart}
-              onEdit={isAuthenticated ? handleEdit : undefined}
-              onDelete={isAuthenticated ? handleDelete : undefined}
-              isAdmin={isAuthenticated}
+        {editingProduct && (
+          <div className="mb-4" aria-live="polite">
+            <h4>{editingProduct.id ? "Editar Producto" : "Agregar Producto"}</h4>
+            <ProductForm
+              initialData={editingProduct}
+              onSubmit={handleSave}
+              onCancel={handleCancel}
             />
           </div>
-        ))}
-      </div>
+        )}
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-    </div>
+        <div className="row row-cols-1 row-cols-md-3 g-4">
+          {currentProducts.map((product) => (
+            <div className="col" key={product.id}>
+              <ProductCard
+                product={product}
+                onAddToCart={handleAddToCart}
+                onEdit={isAuthenticated ? handleEdit : undefined}
+                onDelete={isAuthenticated ? handleDelete : undefined}
+                isAdmin={isAuthenticated}
+                // Podemos mejorar ProductCard para que reciba iconos si querés
+              />
+            </div>
+          ))}
+        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+    </>
   );
 };
 
 export default Products;
+
+

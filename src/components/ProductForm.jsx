@@ -16,7 +16,7 @@ const ProductForm = ({ initialData = {}, onSubmit, onCancel }) => {
 
   const validate = () => {
     const errs = {};
-    if (!name.trim()) errs.name = "El nombre es obligatorio";
+    if (!name.trim()) errs.name = "El nombre del producto es obligatorio";
     if (!price || Number(price) <= 0) errs.price = "El precio debe ser mayor a 0";
     if (!description.trim() || description.trim().length < 10)
       errs.description = "La descripción debe tener al menos 10 caracteres";
@@ -40,10 +40,11 @@ const ProductForm = ({ initialData = {}, onSubmit, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} noValidate>
       <div className="mb-3">
-        <label className="form-label">Nombre</label>
+        <label className="form-label">Nombre del producto regional</label>
         <input
           type="text"
           className={`form-control ${errors.name ? "is-invalid" : ""}`}
+          placeholder="Ej: Queso de cabra salteño"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -51,10 +52,11 @@ const ProductForm = ({ initialData = {}, onSubmit, onCancel }) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Precio</label>
+        <label className="form-label">Precio (en pesos argentinos)</label>
         <input
           type="number"
           className={`form-control ${errors.price ? "is-invalid" : ""}`}
+          placeholder="Ej: 1200"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
@@ -62,10 +64,11 @@ const ProductForm = ({ initialData = {}, onSubmit, onCancel }) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Descripción</label>
+        <label className="form-label">Descripción del producto</label>
         <textarea
           className={`form-control ${errors.description ? "is-invalid" : ""}`}
           rows="3"
+          placeholder="Ej: Queso artesanal producido en los Valles Calchaquíes"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -75,17 +78,18 @@ const ProductForm = ({ initialData = {}, onSubmit, onCancel }) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">URL de imagen</label>
+        <label className="form-label">URL de imagen (opcional)</label>
         <input
           type="text"
           className="form-control"
+          placeholder="Ej: https://example.com/queso.jpg"
           value={image}
           onChange={(e) => setImage(e.target.value)}
         />
       </div>
 
       <button type="submit" className="btn btn-primary me-2">
-        Guardar
+        Guardar producto
       </button>
       <button type="button" className="btn btn-secondary" onClick={onCancel}>
         Cancelar
